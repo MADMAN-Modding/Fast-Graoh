@@ -1,50 +1,54 @@
 #include <math.h>
 #include <ti/getcsc.h>
 #include <graphx.h>
+#include <string.h>
+
+double equation(double x)
+{
+    return x;
+}
+
+struct coordinate
+{
+    int x;
+    int y;
+};
+
 
 int main(void)
 {
-    int pts[10];
-    int i;
+    int x_min = 0;
+    int x_max = 10;
+    double delta = 0.5;
 
-    int rx = 100;
-    int ry = 100;
-    int cx = GFX_LCD_WIDTH / 2;
-    int cy = GFX_LCD_HEIGHT / 2;
+    int points = (x_max-x_min)/delta;
 
-    /* Build the coordinates of the polygon */
-    double theta = -M_PI / 2;
-    double dtheta = 4 * M_PI / 5;
-    for (i = 0; i < 10; i += 2)
-    {
-        pts[i+0] = (int)(cx + rx * cos(theta)),
-        pts[i+1] = (int)(cy + ry * sin(theta));
-        theta += dtheta;
-    }
+    struct coordinate coords[points];
 
     /* Initialize graphics drawing */
     gfx_Begin();
 
-    /* Set the outline color */
-    gfx_SetColor(0);
+    gfx_SetColor(1);
 
-    /* Draw a polygon */
-    gfx_Polygon(pts, 5);
+    gfx_Line(GFX_LCD_WIDTH / 2, 0, GFX_LCD_WIDTH / 2, GFX_LCD_HEIGHT);
+    gfx_Line(0, GFX_LCD_HEIGHT / 2, GFX_LCD_WIDTH, GFX_LCD_HEIGHT / 2);
+
+    gfx_SetColor(3);
+    gfx_Line(0,0, GFX_LCD_WIDTH, GFX_LCD_HEIGHT);
+
+    for (int i = 0; i < points-1; i++)
+    {
+        struct coordinate coord1 = coords[i];
+        struct coordinate coord2 = coords[i+1];
+
+
+        gfx_Line(coord1.x, coord1.y, coord2.x, coord2.y);
+    }
+    
 
     /* Waits for a key */
-    while (!os_GetCSC());
-
-    /* Flood fill the inside of the polygon */
-    gfx_FloodFill(GFX_LCD_WIDTH / 2, GFX_LCD_HEIGHT / 2, 229);
-
-    /* Waits for a key */
-    while (!os_GetCSC());
-
-    /* Flood fill the outside of the polygon */
-    gfx_FloodFill(0, 0, 9);
-
-    /* Waits for a key */
-    while (!os_GetCSC());
+    while (!os_GetCSC())
+        ;
 
     /* End graphics drawing */
     gfx_End();
